@@ -4,9 +4,12 @@ import { RouterLink } from 'vue-router'
 
 import DatePicker from '@/components/DatePicker.vue'
 import SlotPicker from '@/components/SlotPicker.vue'
+import TicketPicker from '@/components/TicketPicker.vue'
+import { MAX_TICKETS_PER_BOOKING, availableSpots, canBook } from '@/domain/availability'
 import { formatMoney, localDate } from '@/domain/format'
-import { TICKET_LABELS } from '@/domain/labels'
-import { TICKET_KINDS } from '@/domain/types'
+import { REJECTION_MESSAGES, TICKET_LABELS } from '@/domain/labels'
+import { cartTotal, ticketLines } from '@/domain/pricing'
+import { TICKET_KINDS, type TicketQuantities } from '@/domain/types'
 import { useCatalogStore } from '@/stores/catalog'
 
 // `id` comes from the route (/experiences/:id) because the route has `props: true`.
@@ -29,6 +32,24 @@ const slotsOnDate = computed(() =>
 )
 const now = new Date()
 
+const noTickets: TicketQuantities = { adult: 0, child: 0, senior: 0 }
+const quantities = ref<TicketQuantities>({ ...noTickets })
+
+const selectedSlot = computed(() =>
+  selectedSlotId.value ? catalog.slotById(selectedSlotId.value) : undefined,
+)
+const maxTickets = computed(() =>
+  selectedSlot.value
+    ? Math.min(MAX_TICKETS_PER_BOOKING, availableSpots(selectedSlot.value))
+    : MAX_TICKETS_PER_BOOKING,
+)
+const check = computed(() =>
+  selectedSlot.value ? canBook(selectedSlot.value, quantities.value, new Date()) : undefined,
+)
+const total = computed(() =>
+  experience.value ? cartTotal(ticketLines(experience.value, quantities.value)) : 0,
+)
+
 // vs React: watch(source, callback) is useEffect with an explicit dependency, but it does not
 // run on mount by default (pass { immediate: true } for that). Picking another date clears the
 // chosen time slot.
@@ -44,6 +65,7 @@ watch(
   () => {
     selectedDate.value = null
     selectedSlotId.value = null
+    quantities.value = { ...noTickets }
   },
 )
 
@@ -86,6 +108,17 @@ onUnmounted(() => {
         <h2>Horario</h2>
         <SlotPicker v-model="selectedSlotId" :slots="slotsOnDate" :now="now" />
       </template>
+
+      <template v-if="selectedSlot">
+        <h2>Boletos</h2>
+        <TicketPicker v-model="quantities" :prices="experience.prices" :max-tickets="maxTickets" />
+        <p v-if="check && !check.ok && check.reason !== 'empty'" class="error" role="alert">
+          {{ REJECTION_MESSAGES[check.reason] }}
+        </p>
+        <p class="total">
+          Total: <strong>{{ formatMoney(total) }}</strong>
+        </p>
+      </template>
     </section>
 
     <section v-else>
@@ -102,5 +135,13 @@ onUnmounted(() => {
 
 .prices {
   padding-left: 1.25rem;
+}
+
+.error {
+  color: var(--danger);
+}
+
+.total {
+  font-size: 1.1rem;
 }
 </style>
