@@ -64,6 +64,9 @@ AI_LOG.md        # human-curated log of AI-assisted work
 - AI output is never saved directly: it is validated with zod and shown to the operator for review
   (human-in-the-loop) before it changes any data.
 - Do not add dependencies without saying why and asking first.
+- GitHub access is plain `git` over SSH only (remote `git@github.com:...`). Never use the `gh` CLI
+  in this repo and never switch the remote to HTTPS: `gh` on this machine is signed in to a
+  different account. For PRs, issues or CI status, give Dan the github.com link instead.
 
 ## End of each session
 Draft an entry at the end of `AI_LOG.md` using its template (what was asked, what you proposed,
