@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, onUnmounted, watchEffect } from 'vue'
+import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
 import { RouterLink } from 'vue-router'
 
-import { formatMoney } from '@/domain/format'
+import DatePicker from '@/components/DatePicker.vue'
+import SlotPicker from '@/components/SlotPicker.vue'
+import { formatMoney, localDate } from '@/domain/format'
 import { TICKET_LABELS } from '@/domain/labels'
 import { TICKET_KINDS } from '@/domain/types'
 import { useCatalogStore } from '@/stores/catalog'
@@ -15,6 +17,34 @@ const catalog = useCatalogStore()
 const experience = computed(() => catalog.experienceById(id))
 const venue = computed(() =>
   experience.value ? catalog.venueById(experience.value.venueId) : undefined,
+)
+
+const slots = computed(() => catalog.slotsFor(id))
+const dates = computed(() => [...new Set(slots.value.map((slot) => localDate(slot.startsAt)))])
+
+const selectedDate = ref<string | null>(null)
+const selectedSlotId = ref<string | null>(null)
+const slotsOnDate = computed(() =>
+  slots.value.filter((slot) => localDate(slot.startsAt) === selectedDate.value),
+)
+const now = new Date()
+
+// vs React: watch(source, callback) is useEffect with an explicit dependency, but it does not
+// run on mount by default (pass { immediate: true } for that). Picking another date clears the
+// chosen time slot.
+watch(selectedDate, () => {
+  selectedSlotId.value = null
+})
+
+// vs React: Vue Router reuses this same component instance when going from /experiences/a to
+// /experiences/b, so local state survives the navigation and must be reset when the id changes.
+// The getter `() => id` is needed because `id` is a destructured prop, not a ref.
+watch(
+  () => id,
+  () => {
+    selectedDate.value = null
+    selectedSlotId.value = null
+  },
 )
 
 // vs React: watchEffect is like useEffect, but the dependencies are tracked for you: it runs
@@ -46,6 +76,16 @@ onUnmounted(() => {
           {{ TICKET_LABELS[kind] }}: <strong>{{ formatMoney(experience.prices[kind]) }}</strong>
         </li>
       </ul>
+
+      <h2>Fecha</h2>
+      <!-- vs React: v-model="selectedDate" = value + onChange in one directive. -->
+      <DatePicker v-model="selectedDate" :dates="dates" />
+
+      <!-- vs React: <template> groups elements without rendering a wrapper, like <></>. -->
+      <template v-if="selectedDate">
+        <h2>Horario</h2>
+        <SlotPicker v-model="selectedSlotId" :slots="slotsOnDate" :now="now" />
+      </template>
     </section>
 
     <section v-else>
