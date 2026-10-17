@@ -9,6 +9,11 @@ export const TICKET_LABELS: Record<TicketKind, string> = {
   senior: 'Adulto mayor',
 }
 
+export const CHECKOUT_MESSAGES = {
+  'empty-cart': 'Tu carrito está vacío.',
+  'unknown-slot': 'Uno de los horarios ya no existe. Quítalo del carrito.',
+} as const
+
 export const REJECTION_MESSAGES: Record<BookingRejection, string> = {
   'invalid-quantity': 'Las cantidades no son válidas.',
   empty: 'Elige al menos un boleto.',

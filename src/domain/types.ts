@@ -43,9 +43,17 @@ export interface TicketLine {
   unitPrice: Cents
 }
 
+export interface Customer {
+  name: string
+  email: string
+}
+
 export interface Booking {
   id: string
+  /** Confirmation code shared by every booking made in the same checkout, e.g. "TD-0001". */
+  reference: string
   slotId: string
+  customer: Customer
   lines: TicketLine[]
   total: Cents
   /** ISO 8601 timestamp. */

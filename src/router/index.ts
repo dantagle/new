@@ -24,6 +24,12 @@ const router = createRouter({
       name: 'cart',
       component: () => import('../views/CartView.vue'),
     },
+    {
+      path: '/confirmation/:reference',
+      name: 'confirmation',
+      component: () => import('../views/ConfirmationView.vue'),
+      props: true,
+    },
   ],
 })
 
