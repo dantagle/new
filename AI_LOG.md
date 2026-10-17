@@ -19,7 +19,7 @@ session and edited by me before committing.
 **What it proposed:**
 **What I accepted / changed and why:**
 **Issues caught in review (bugs, bad assumptions, over-engineering):**
-**What I learned (Vue / tooling): How a Vue 3 project differs from Next.js (explicit index.html + main.ts entry, routes declared by hand instead of file-based), Single File Components (.vue files with <script setup>, <template> and scoped styles), and how the Vue plugin is wired into Vite.**
+**What I learned (Vue / tooling):**
 **Commits:**
 
 ---
@@ -52,7 +52,7 @@ every generated file (compared to Next.js) before running anything.
 - `npm audit` reports 4 high-severity issues, all from one dev-only chain
   (`braces` → `micromatch` → `fast-glob` → `@vue/eslint-config-typescript`). The only fix npm offers
   is a breaking downgrade of the ESLint config, so it was left as is for now.
-**What I learned (Vue / tooling):** _(Dan to write)_
+**What I learned (Vue / tooling):** How a Vue 3 project differs from Next.js (explicit index.html + main.ts entry, routes declared by hand instead of file-based), Single File Components (.vue files with <script setup>, <template> and scoped styles), and how the Vue plugin is wired into Vite.
 **Commits:** `21d21a8` chore: scaffold Vue 3 project with create-vue · `50cd9e8` ci: add GitHub Actions workflow (CI run #1 green)
 
 ### 2026-10-17 — Part 1: Domain model & seed data — DRAFT
