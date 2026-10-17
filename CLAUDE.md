@@ -8,18 +8,25 @@ Vue 3 codebase AND a visible record of how AI-assisted development was used with
 Brand, venues and data are fictional. No real payments, no real customer data.
 
 ## Who you are working with
-Dan is a senior product engineer who ships React / Next.js + TypeScript in production and is
-**learning Vue 3 with this project**. Treat every session as pair programming + teaching:
+Dan is a senior product engineer who ships React / Next.js + TypeScript in production.
+**Goal: learn the practical differences between React and Vue 3** — what is the same under another
+name, what works differently, and where a React developer trips up. Not a from-scratch course:
+do not explain TypeScript, testing or general architecture.
 
+How we work:
+- **Claude builds the app part by part; Dan reads each part.** Small commits, one concern each, so
+  every part can be read on its own.
+- **Comment only where Vue differs from React**, with the prefix `// vs React:` in scripts and
+  `<!-- vs React: -->` in templates. Each comment says what the Vue code does, why Vue does it that
+  way, and the React equivalent or the trap. No comments for things that work the same as in React.
+- **Keep `docs/react-vs-vue.md` up to date**: every new difference gets a row
+  (concept · React · Vue · trap · where it is used in the code).
 - **Explain in Spanish, code and commits in English.**
-- The first time a Vue concept appears (ref, computed, watch, defineProps, defineEmits, v-model,
-  slots, provide/inject, Pinia, Vue Router, Vitest + Vue Test Utils, Nuxt), explain it in 2–4 lines
-  and map it to its React equivalent before writing the code.
-- **Plan before code.** For any feature: propose the files you'll touch and the approach, wait for OK.
-- **Practice mode:** when Dan says "modo práctica", do NOT write the solution. Leave a typed stub with
-  TODOs and hints, let him write it, then review his code like a senior reviewer.
-- Keep changes small: one feature or one concern per step, so each step can be one commit.
-- If you are unsure or a requirement is ambiguous, ask. Do not invent business rules.
+- **Plan before code.** For each part: propose the files you'll touch and the approach, wait for OK.
+- Exercises are optional: if Dan says "modo práctica", leave a typed stub with TODOs and hints, let
+  him write it, then review it like a senior reviewer.
+- Business rules: propose simple ones, marked as assumptions, and wait for Dan to approve or
+  change them. If a requirement is ambiguous, ask.
 
 ## Stack
 - Vue 3 (Composition API, `<script setup lang="ts">` only — no Options API in new code)
@@ -32,7 +39,7 @@ Dan is a senior product engineer who ships React / Next.js + TypeScript in produ
 - `npm run dev` — start the app
 - `npm run test:unit` — Vitest
 - `npm run type-check` — vue-tsc
-- `npm run lint` — ESLint
+- `npm run lint` — oxlint + ESLint with autofix; `npm run lint:check` — same checks without fixing (CI)
 - Before every commit: type-check, lint and tests must pass.
 
 ## Structure
@@ -46,7 +53,7 @@ src/
   views/         # route-level pages
   router/
 server/          # tiny Node API (Anthropic SDK lives here)
-docs/            # PLAN.md, decisions
+docs/            # PLAN.md, react-vs-vue.md, decisions
 AI_LOG.md        # human-curated log of AI-assisted work
 ```
 
@@ -66,7 +73,8 @@ AI_LOG.md        # human-curated log of AI-assisted work
 - Do not add dependencies without saying why and asking first.
 - GitHub access is plain `git` over SSH only (remote `git@github.com:...`). Never use the `gh` CLI
   in this repo and never switch the remote to HTTPS: `gh` on this machine is signed in to a
-  different account. For PRs, issues or CI status, give Dan the github.com link instead.
+  different account. For PRs, issues or CI status, read the github.com page in the Claude app's
+  built-in browser, or give Dan the link.
 
 ## End of each session
 Draft an entry at the end of `AI_LOG.md` using its template (what was asked, what you proposed,

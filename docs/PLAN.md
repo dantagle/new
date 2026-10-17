@@ -1,63 +1,50 @@
 # TourDesk — build plan
 
-One phase per Claude Code session (or two). Start each one with `/clear` and the kickoff prompt.
-Commit after every small step. Update `AI_LOG.md` at the end of each phase.
+**Goal:** learn the practical differences between React and Vue 3 by reading a real app, built
+part by part. Claude writes the code; Dan reads each part. Comments marked `// vs React:` explain only
+what differs from React, and every difference is collected in [react-vs-vue.md](react-vs-vue.md).
 
-## Phase 0 — Setup (≈1 h)
-**Goal:** working Vue 3 project, repo on GitHub, CI green.
-**You'll learn:** Vue project anatomy, SFCs, Vite, how `CLAUDE.md` steers the agent.
-**Kickoff prompt:**
-> Read CLAUDE.md, README.md and docs/PLAN.md. We're starting Phase 0. Scaffold the project with
-> `npm create vue@latest` (TypeScript, Router, Pinia, Vitest, ESLint, Prettier) in this folder without
-> overwriting my docs. Then add a GitHub Actions workflow that runs type-check, lint and tests.
-> Before running anything, explain the plan, and explain in Spanish what each generated file does,
-> comparing to a Next.js project.
+One part per session (or two). Each part ends with small commits, green CI and an `AI_LOG.md` draft.
+Exercises are optional ("modo práctica").
 
-## Phase 1 — Domain model & seed data (≈1–2 h)
-**Goal:** types and pure functions with tests; no UI yet.
-**You'll learn:** TypeScript-first modeling, Vitest basics.
-**Kickoff prompt:**
-> Phase 1. Propose types in src/domain for Venue, Experience, TimeSlot (date, start time, capacity, sold),
-> TicketType (adult/child/senior, price in cents) and Booking. Add pure functions: availableSpots(slot),
-> cartTotal(items), canBook(slot, qty). I'll define the business rules: [write them here].
-> Then seed 2 fictional venues in Querétaro with 4 experiences. Write Vitest tests first for the functions.
+## Part 0 — Setup ✅
+Vue 3 + TypeScript project scaffolded with create-vue, CI running type-check, lint and tests.
 
-## Phase 2 — Visitor booking flow (≈3–4 h)
-**Goal:** catalog → experience detail → date & slot → ticket picker → cart → mock checkout.
-**You'll learn:** components, props/emits, v-model, computed, watch, Vue Router, Pinia, component tests.
-**Kickoff prompt:**
-> Phase 2. Plan the visitor flow as routes, views and components, and the Pinia stores it needs.
-> Build it step by step, one component per step. Before each new Vue concept, explain it in Spanish
-> vs React. Use "modo práctica" for TicketPicker: give me a stub and let me write it.
-> Add component tests for TicketPicker and the cart store.
+## Part 1 — Domain model & seed data
+**Builds:** remove the create-vue demo code; types in `src/domain` (Venue, Experience, TimeSlot,
+TicketType, Booking) and pure functions (`availableSpots`, `cartTotal`, `canBook`) with tests;
+seed data for 2 fictional venues in Querétaro.
+**React vs Vue:** almost none — plain TypeScript and Vitest, which works like Jest. This part is the
+base the rest is built on, so it stays short.
+**Kickoff:** "Part 1. Propose the domain types and the business rules as assumptions before coding."
 
-## Phase 3 — Back office (≈2–3 h)
-**Goal:** operator CRUD for experiences, schedules, capacity and prices + a sales report.
-**You'll learn:** forms, validation with zod, composables, route guards.
-**Kickoff prompt:**
-> Phase 3. Build the operator back office: list/create/edit experiences, generate time slots for a
-> weekly schedule, edit capacity and prices, and a simple sales report from bookings. Extract shared
-> form logic into composables. Explain composables vs React custom hooks.
+## Part 2 — Visitor booking flow
+**Builds:** catalog → experience detail → date & slot → ticket picker → cart → mock checkout.
+**React vs Vue:** SFCs and templates vs JSX · `ref` / `reactive` vs `useState` · `computed` vs
+`useMemo` (no dependency arrays) · `watch` vs `useEffect` · `defineProps` / `defineEmits` vs props and
+callbacks · `v-model` on components · `v-if` / `v-for` / `:key` · slots vs `children` · Vue Router vs
+the Next.js router · Pinia vs Context / Zustand · Vue Test Utils vs Testing Library.
+**Kickoff:** "Part 2. Plan the routes, views, components and stores, then build one piece at a time."
 
-## Phase 4 — AI configuration assistant (≈3 h)
-**Goal:** operator types a description in Spanish or English → Claude returns structured config →
-validated with zod → shown as an editable preview → operator confirms → saved.
-**You'll learn:** server-side LLM calls, tool use / structured output, validation, human-in-the-loop UX,
-testing with a mocked API.
-**Kickoff prompt:**
-> Phase 4. Add a tiny Node server in server/ with one endpoint POST /api/parse-experience that calls the
-> Anthropic API with tool use, using a tool whose input schema matches our Experience + schedule types.
-> Validate the result with zod; on failure return a clear error. In the back office, add an
-> "Asistente de configuración" screen: textarea → preview of the parsed config (editable) → Confirm.
-> Never save without confirmation. Mock the API in tests. Explain each decision, especially prompt design
-> and failure handling.
+## Part 3 — Back office
+**Builds:** operator CRUD for experiences, weekly schedules, capacity and prices, plus a sales report.
+**React vs Vue:** forms with `v-model` vs controlled inputs · composables vs custom hooks ·
+validation with zod in both worlds · route guards vs middleware · `provide` / `inject` vs Context.
+**Kickoff:** "Part 3. Plan the back office and extract shared form logic into composables."
 
-## Phase 5 — Polish & ship (≈2 h)
-**Goal:** something a recruiter can open in 2 minutes.
-**Kickoff prompt:**
-> Phase 5. Review the whole codebase as a senior Vue reviewer and list issues by priority before fixing.
-> Then: README with screenshots/GIF, deploy (Vercel or Netlify), make sure CI is green, and help me
-> clean up AI_LOG.md (I'll write the final words).
+## Part 4 — AI configuration assistant
+**Builds:** a tiny Node server (`server/`) with `POST /api/parse-experience` that calls the Anthropic
+API with tool use, validates the result with zod and returns it; in the back office, a screen where
+the operator types a description, reviews an editable preview and confirms. Never saved without
+confirmation. The API is mocked in tests.
+**React vs Vue:** async state and loading/error UI · editing a copy of the data before saving.
+**Kickoff:** "Part 4. Plan the endpoint, the prompt and tool schema, and the review screen."
 
-## Optional — Phase 6: Nuxt 3
-Port to Nuxt 3: file-based pages, `useFetch`, and move the AI endpoint to `server/api`.
+## Part 5 — Polish & ship
+**Builds:** review of the whole codebase, README with screenshots, deploy (Vercel or Netlify),
+green CI, final `AI_LOG.md`. Decide whether the `// vs React:` comments stay in the public repo.
+**Kickoff:** "Part 5. Review the codebase, list issues by priority, then ship."
+
+## Optional — Part 6: Nuxt 3
+Port to Nuxt 3: file-based pages, `useFetch`, the AI endpoint in `server/api`.
+**React vs Vue:** Nuxt vs Next.js.
