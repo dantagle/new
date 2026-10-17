@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch, watchEffect } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 
 import DatePicker from '@/components/DatePicker.vue'
 import SlotPicker from '@/components/SlotPicker.vue'
@@ -10,12 +10,15 @@ import { formatMoney, localDate } from '@/domain/format'
 import { REJECTION_MESSAGES, TICKET_LABELS } from '@/domain/labels'
 import { cartTotal, ticketLines } from '@/domain/pricing'
 import { TICKET_KINDS, type TicketQuantities } from '@/domain/types'
+import { useCartStore } from '@/stores/cart'
 import { useCatalogStore } from '@/stores/catalog'
 
 // `id` comes from the route (/experiences/:id) because the route has `props: true`.
 const { id } = defineProps<{ id: string }>()
 
 const catalog = useCatalogStore()
+const cart = useCartStore()
+const router = useRouter()
 
 const experience = computed(() => catalog.experienceById(id))
 const venue = computed(() =>
@@ -49,6 +52,13 @@ const check = computed(() =>
 const total = computed(() =>
   experience.value ? cartTotal(ticketLines(experience.value, quantities.value)) : 0,
 )
+
+function addToCart(): void {
+  if (!selectedSlot.value || !check.value?.ok) return
+  cart.setItem(selectedSlot.value.id, quantities.value)
+  // vs React: useRouter().push() is the counterpart of Next.js useRouter().push().
+  router.push({ name: 'cart' })
+}
 
 // vs React: watch(source, callback) is useEffect with an explicit dependency, but it does not
 // run on mount by default (pass { immediate: true } for that). Picking another date clears the
@@ -118,6 +128,9 @@ onUnmounted(() => {
         <p class="total">
           Total: <strong>{{ formatMoney(total) }}</strong>
         </p>
+        <button type="button" class="primary" :disabled="!check?.ok" @click="addToCart">
+          Agregar al carrito
+        </button>
       </template>
     </section>
 
@@ -143,5 +156,17 @@ onUnmounted(() => {
 
 .total {
   font-size: 1.1rem;
+}
+
+.primary {
+  padding: 0.6rem 1.2rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.primary:disabled {
+  opacity: 0.5;
 }
 </style>

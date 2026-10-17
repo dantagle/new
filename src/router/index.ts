@@ -19,6 +19,11 @@ const router = createRouter({
       // doesn't need to read the router (like receiving `params` in a Next.js page).
       props: true,
     },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
+    },
   ],
 })
 
