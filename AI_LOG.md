@@ -72,3 +72,24 @@ generated relative to a start date so the demo never runs out of future slots.
   "reports nothing" on `.vue` files) and were corrected before pushing.
 **What I learned (Vue / tooling):** _(Dan to write)_
 **Commits:** `9b5ae1f` docs · `a8770b0` domain · `6128442` seed · `df1b975` remove demo · `7a4d7f0` guide fix (CI run #2 green)
+
+### 2026-10-17 — Part 2: Visitor booking flow — DRAFT
+**Goal:** Catalog → experience detail → date and slot → tickets → cart → mock checkout → confirmation.
+**What I asked Claude Code:** Build the flow in six small steps, with `// vs React:` comments and a row in
+`docs/react-vs-vue.md` for every new difference.
+**What it proposed:** Three Pinia stores (catalog, cart, bookings) and four components (ExperienceCard,
+DatePicker, SlotPicker, TicketPicker) using `defineModel` for `v-model`. Four business assumptions: one
+cart line per slot (re-adding replaces), checkout asks only name and email, checkout re-validates and
+books all or nothing, bookings in memory only.
+**What I accepted / changed and why:** Accepted the plan and the four assumptions as proposed.
+**Issues caught in review (bugs, bad assumptions, over-engineering):**
+- The TicketPicker test was checked against a mutating implementation (`quantities.value[kind] += 1`):
+  it fails, so it really guards the "replace, don't mutate" rule for `v-model` objects.
+- Three statements in the guide were wrong and were corrected after checking: lifecycle hooks *can*
+  be registered after `await` in `<script setup>`; `.number` *is* automatic on `type="number"`
+  (checked against the Vue docs); an unverified claim about Next.js reusing pages was removed.
+- Changed from the plan: the confirmation route is `/confirmation/:reference` (one code for every
+  booking in a checkout) instead of `/bookings/:id`; the route passes params as props
+  (`props: true`) instead of reading `useRoute()` in the view.
+**What I learned (Vue / tooling):** _(Dan to write)_
+**Commits:** `c222b60` catalog · `0fe6392` detail · `a08c6c8` date & slot · `0999842` tickets · `ba33006` cart · `b07ffc9` checkout (+ guide fixes `4fc52a2`, `001aa87`)
