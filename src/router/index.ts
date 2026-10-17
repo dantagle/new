@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import CatalogView from '../views/CatalogView.vue'
 
 // vs React: routes are declared in code, not derived from the folder structure as in Next.js.
 const router = createRouter({
@@ -7,8 +7,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'catalog',
+      component: CatalogView,
+    },
+    {
+      path: '/experiences/:id',
+      name: 'experience',
+      // Lazy-loaded: a separate chunk, like next/dynamic or React.lazy.
+      component: () => import('../views/ExperienceView.vue'),
+      // vs React: `props: true` passes route params (:id) to the view as props, so the view
+      // doesn't need to read the router (like receiving `params` in a Next.js page).
+      props: true,
     },
   ],
 })
